@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { FaTrash, FaSearch, FaDownload } from "react-icons/fa";
 import {
-  getUsers,
+  getAllUsers,
   deleteUser,
 } from "../services/userService";
 
@@ -18,7 +18,7 @@ const UsersManagement = () => {
     setLoading(true);
     setError("");
     try {
-      const data = await getUsers();
+      const data = await getAllUsers();
       setUsers(data);
     } catch (err) {
       setError(err.message || "Failed to load users");

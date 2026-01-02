@@ -3,7 +3,7 @@ import api from "../config/api";
 
 const API_URL = "/admin/users";
 
-export const getUsers = async () => {
+export const getAllUsers = async () => {
   const response = await api.get(API_URL);
   return response.data;
 };

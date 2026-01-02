@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { getAllFoods } from "../services/foodService";
 import { getAllCategories } from "../services/categoryService";
-import { getOrders } from "../services/orderService";
-import { getUsers } from "../services/userService";
+import { getAllOrders } from "../services/orderService";
+import { getAllUsers } from "../services/userService";
 import { getTotalRevenue } from "../services/adminService";
 import { 
   FaSearch, 
@@ -30,8 +30,8 @@ function Dashboard({ setActivePage }) {
         const [foods, categories, orders, users, revenue] = await Promise.all([
           getAllFoods(),
           getAllCategories(),
-          getOrders(),
-          getUsers(),
+          getAllOrders(),
+          getAllUsers(),
           getTotalRevenue()
         ]);
 

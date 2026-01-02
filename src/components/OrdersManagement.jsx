@@ -1,7 +1,7 @@
 // components/OrdersManagement.jsx
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaSearch } from "react-icons/fa";
-import { getOrders, updateOrderStatus } from "../services/orderService";
+import { getAllOrders, updateOrderStatus } from "../services/orderService";
 
 const OrdersManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -15,7 +15,7 @@ const OrdersManagement = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await getOrders();
+        const data = await getAllOrders();
         setOrders(data);
       } catch (error) {
         console.error("Error fetching orders:", error);
