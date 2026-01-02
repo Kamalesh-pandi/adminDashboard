@@ -1,25 +1,14 @@
 // src/services/adminService.js
-import axios from "axios";
+import api from "../config/api";
 
-const API_URL = "https://foodorderapp-9ko4.onrender.com/api/admin";
-
-// Helper to get headers with token
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("token");
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  };
-};
+const API_URL = "/admin";
 
 // ================== Admin Service ==================
 
 // Fetch all categories with their related orders
 export const getCategoriesWithOrders = async () => {
   try {
-    const res = await axios.get(`${API_URL}/categories-with-orders`, getAuthHeaders());
+    const res = await api.get(`${API_URL}/categories-with-orders`);
     return res.data;
   } catch (error) {
     console.error("Error fetching categories with orders:", error.response?.data || error.message);
@@ -30,7 +19,7 @@ export const getCategoriesWithOrders = async () => {
 // Fetch orders by specific category ID
 export const getOrdersByCategory = async (categoryId) => {
   try {
-    const res = await axios.get(`${API_URL}/categories/${categoryId}/orders`, getAuthHeaders());
+    const res = await api.get(`${API_URL}/categories/${categoryId}/orders`);
     return res.data;
   } catch (error) {
     console.error(`Error fetching orders for category ${categoryId}:`, error.response?.data || error.message);
@@ -41,7 +30,7 @@ export const getOrdersByCategory = async (categoryId) => {
 // Fetch all orders
 export const getAllOrders = async () => {
   try {
-    const res = await axios.get(`${API_URL}/orders`, getAuthHeaders());
+    const res = await api.get(`${API_URL}/orders`);
     return res.data;
   } catch (error) {
     console.error("Error fetching all orders:", error.response?.data || error.message);
@@ -52,7 +41,7 @@ export const getAllOrders = async () => {
 // Fetch total revenue
 export const getTotalRevenue = async () => {
   try {
-    const res = await axios.get(`${API_URL}/total-revenue`, getAuthHeaders());
+    const res = await api.get(`${API_URL}/total-revenue`);
     return res.data.totalRevenue ?? res.data;
   } catch (error) {
     console.error("Error fetching total revenue:", error.response?.data || error.message);
@@ -63,7 +52,7 @@ export const getTotalRevenue = async () => {
 // Fetch monthly revenue for a specific year
 export const getMonthlyRevenue = async (year) => {
   try {
-    const res = await axios.get(`${API_URL}/monthly-revenue/${year}`, getAuthHeaders());
+    const res = await api.get(`${API_URL}/monthly-revenue/${year}`);
     return res.data; // Expected: [{ month: 1, revenue: 12345 }, ...]
   } catch (error) {
     console.error(`Error fetching monthly revenue for ${year}:`, error.response?.data || error.message);

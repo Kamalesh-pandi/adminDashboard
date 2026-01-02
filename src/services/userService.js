@@ -1,29 +1,14 @@
 // src/services/userService.js
-import axios from "axios";
+import api from "../config/api";
 
-const API_URL = "https://foodorderapp-9ko4.onrender.com/api/admin/users";
-
-const token = localStorage.getItem("token");
-const config = {
-  headers: { Authorization: `Bearer ${token}` },
-};
+const API_URL = "/admin/users";
 
 export const getUsers = async () => {
-  const response = await axios.get(API_URL, config);
-  return response.data;
-};
-
-export const addUser = async (user) => {
-  const response = await axios.post(API_URL, user, config);
-  return response.data;
-};
-
-export const updateUser = async (id, user) => {
-  const response = await axios.put(`${API_URL}/${id}`, user, config);
+  const response = await api.get(API_URL);
   return response.data;
 };
 
 export const deleteUser = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`, config);
+  const response = await api.delete(`${API_URL}/${id}`);
   return response.data;
 };

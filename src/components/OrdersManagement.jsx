@@ -83,22 +83,22 @@ const OrdersManagement = () => {
     <div>
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2">
-        <h1 className="h3 text-primary fw-bold">Orders Management</h1>
+        <h1 className="h3 p-color fw-bold">Orders Management</h1>
         <div className="d-flex gap-2 flex-wrap w-100 w-md-auto">
           <div className="input-group">
-            <span className="input-group-text bg-light">
-              <FaSearch />
+            <span className="input-group-text theme-bg-light theme-border">
+              <FaSearch className="theme-text-muted" />
             </span>
             <input
               type="text"
-              className="form-control"
+              className="form-control theme-bg-light theme-text-main theme-border"
               placeholder="Search by Order ID or Customer"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <select
-            className="form-select"
+            className="form-select theme-bg-light theme-text-main theme-border"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -112,13 +112,13 @@ const OrdersManagement = () => {
       </div>
 
       {/* Orders Table */}
-      <div className="card shadow-sm">
+      <div className="card shadow-sm border-0">
         <div className="card-body">
-          <h5 className="card-title mb-3">Recent Orders</h5>
+          <h5 className="card-title theme-text-dark fw-bold mb-3">Recent Orders</h5>
           <div className="table-responsive">
             <table className="table table-hover align-middle">
-              <thead className="table-light">
-                <tr>
+              <thead>
+                <tr className="theme-text-muted">
                   <th>Order ID</th>
                   <th>Order Date</th>
                   <th>Food ID</th>
@@ -133,32 +133,31 @@ const OrdersManagement = () => {
               <tbody>
                 {filteredOrders.length === 0 && (
                   <tr>
-                    <td colSpan="8" className="text-center text-muted">
+                    <td colSpan="8" className="text-center theme-text-muted">
                       No orders found.
                     </td>
                   </tr>
                 )}
                 {filteredOrders.map(
                   (order) => (
-                    console.log(order),
                     (
                       <tr key={order.id}>
-                        <td>{order.id}</td>
-                        <td>{new Date(order.orderDate).toLocaleString()}</td>
-                        <td>{order.items.map(item => item.foodId).join(", ")}</td>
-                        <td>{order.items.length}</td>
-                        <td>{order.address}</td>
+                        <td className="theme-text-dark fw-bold">{order.id}</td>
+                        <td className="theme-text-main">{new Date(order.orderDate).toLocaleString()}</td>
+                        <td className="theme-text-main">{order.items.map(item => item.foodId).join(", ")}</td>
+                        <td className="theme-text-main">{order.items.length}</td>
+                        <td className="theme-text-main">{order.address}</td>
                         <td>
                           <span
                             className={`badge bg-${getStatusClass(
                               order.status
-                            )}`}
+                            )} bg-opacity-10 text-${getStatusClass(order.status)} border-0`}
                           >
                             {order.status}
                           </span>
                         </td>
-                        <td>₹{order.totalAmount?.toFixed(2)}</td>
-                        <td>{order.paymentMethod}</td>
+                        <td className="theme-text-main">₹{order.totalAmount?.toFixed(2)}</td>
+                        <td className="theme-text-main">{order.paymentMethod}</td>
                         <td className="text-end">
                           <button
                             className="btn btn-sm btn-outline-primary"
@@ -185,9 +184,9 @@ const OrdersManagement = () => {
           style={{ background: "rgba(0,0,0,0.5)" }}
         >
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content shadow-lg">
-              <div className="modal-header">
-                <h5 className="modal-title">Update Order {selectedOrder.id}</h5>
+            <div className="modal-content shadow-lg border-0 theme-bg-card">
+              <div className="modal-header theme-border-bottom">
+                <h5 className="modal-title theme-text-dark fw-bold">Update Order {selectedOrder.id}</h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -196,9 +195,9 @@ const OrdersManagement = () => {
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label className="form-label">Status</label>
+                  <label className="form-label theme-text-dark">Status</label>
                   <select
-                    className="form-select"
+                    className="form-select theme-bg-light theme-text-main theme-border"
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value)}
                   >
@@ -209,9 +208,9 @@ const OrdersManagement = () => {
                   </select>
                 </div>
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer theme-border-top">
                 <button
-                  className="btn btn-secondary"
+                  className="btn btn-secondary border-0"
                   onClick={() => setSelectedOrder(null)}
                 >
                   Cancel

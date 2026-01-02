@@ -1,35 +1,28 @@
-import axios from "axios";
+import api from "../config/api";
 
-const API_URL = "https://foodorderapp-9ko4.onrender.com/api/admin/foods";
-
-const getConfig = () => {
-  const token = localStorage.getItem("token");
-  return {
-    headers: { Authorization: `Bearer ${token}` },
-  };
-};
+const API_URL = "/admin/foods";
 
 export const getAllFoods = async () => {
-  const response = await axios.get(API_URL, getConfig());
+  const response = await api.get(API_URL);
   return response.data;
 };
 
 export const getFoodById = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}`, getConfig());
+  const response = await api.get(`${API_URL}/${id}`);
   return response.data;
 };
 
 export const addFood = async (food) => {
-  const response = await axios.post(API_URL, food, getConfig());
+  const response = await api.post(API_URL, food);
   return response.data;
 };
 
 export const updateFood = async (id, food) => {
-  const response = await axios.put(`${API_URL}/${id}`, food, getConfig());
+  const response = await api.put(`${API_URL}/${id}`, food);
   return response.data;
 };
 
 export const deleteFood = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`, getConfig());
+  const response = await api.delete(`${API_URL}/${id}`);
   return response.data;
 };

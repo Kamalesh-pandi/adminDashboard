@@ -1,6 +1,6 @@
 // components/FoodsManagement.jsx
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaStar, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaStar, FaPlus, FaSearch } from "react-icons/fa";
 import {
   getAllFoods,
   addFood,
@@ -27,6 +27,8 @@ const FoodsManagement = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const [showModal, setShowModal] = useState(false);
   const [editingFood, setEditingFood] = useState(null);
@@ -68,6 +70,15 @@ const FoodsManagement = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+
+  const filteredFoods = foods.filter(food => {
+    const matchesSearch = (food.name || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (food.description && food.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    // Fallback to empty string for categoryId to avoid comparison with undefined
+    const foodCatId = food.categoryId ? food.categoryId.toString() : "";
+    const matchesCategory = categoryFilter === "" || foodCatId === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleAddOrUpdateFood = async (e) => {
     e.preventDefault();
@@ -135,102 +146,133 @@ const FoodsManagement = () => {
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h3 text-primary fw-bold">Foods Management</h1>
-        <button
-          className="btn btn-primary btn-lg"
-          onClick={() => {
-            setEditingFood(null);
-            setNewFood({ ...initialFoodState });
-            setShowModal(true);
-          }}
-        >
-          <FaPlus className="me-2" /> Add New Food
-        </button>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <h1 className="h3 p-color fw-bold mb-0">Menu Management</h1>
+        <div className="d-flex gap-2 flex-wrap w-100 w-md-auto">
+          <div className="input-group" style={{maxWidth: '300px'}}>
+            <span className="input-group-text theme-bg-light theme-border">
+              <FaSearch className="theme-text-muted" />
+            </span>
+            <input 
+              type="text" 
+              className="form-control theme-bg-light theme-text-main theme-border" 
+              placeholder="Search dishes..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <select 
+            className="form-select theme-bg-light theme-text-main theme-border" 
+            style={{maxWidth: '200px'}}
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+          <button
+            className="btn bg-color d-flex align-items-center"
+            onClick={() => {
+              setEditingFood(null);
+              setNewFood({ ...initialFoodState });
+              setShowModal(true);
+            }}
+          >
+            <FaPlus className="me-2" /> Add Food
+          </button>
+        </div>
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
-      {loading && <div className="text-center">Loading...</div>}
+      {error && <div className="alert alert-danger shadow-sm border-0">{error}</div>}
+      {loading && <div className="text-center py-5"><div className="loading-spinner"></div></div>}
 
       {/* Food Cards */}
       <div className="row">
-        {foods.map((food) => (
-          <div key={food.id} className="col-sm-6 col-md-4 col-lg-3 mb-4">
-            <div className="card h-100 shadow-sm food-card">
-              <img
-                src={food.imageUrl || "src/assets/food logo.png"}
-                className="card-img-top"
-                alt={food.name}
-                style={{ height: "250px", objectFit: "cover" }}
-                onError={(e) => {
-                  e.target.onerror = null; // Prevent infinite loop if fallback fails
-                  e.target.src = "src/assets/food logo.png";
-                }}
-              />
+        {filteredFoods && filteredFoods.map((food) => {
+          if (!food) return null;
+          return (
+            <div key={food.id} className="col-sm-6 col-md-4 col-lg-3 mb-4">
+              <div className="card h-100 shadow-sm food-card border-0">
+                <img
+                  src={food.imageUrl || "src/assets/food logo.png"}
+                  className="card-img-top"
+                  alt={food.name || "Food"}
+                  style={{ height: "250px", objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "src/assets/food logo.png";
+                  }}
+                />
 
-              <div className="card-body d-flex flex-column">
-                <h5 className="card-title fw-bold">{food.name}</h5>
-                <p className="text-muted mb-1">{food.categoryName || "N/A"}</p>
-                <p className="text-secondary mb-2 small">{food.description}</p>
+                <div className="card-body d-flex flex-column theme-bg-card">
+                  <h5 className="card-title fw-bold theme-text-dark">{food.name || "Unnamed"}</h5>
+                  <p className="theme-text-muted mb-1">{food.categoryName || "N/A"}</p>
+                  <p className="theme-text-main mb-2 small">{food.description || ""}</p>
 
-                <div className="d-flex align-items-center mb-2">
-                  <h5 className="text-primary me-auto mb-0">
-                    ₹{food.price.toFixed(2)}
-                  </h5>
-                </div>
+                  <div className="d-flex align-items-center mb-2">
+                    <h5 className="p-color me-auto mb-0">
+                      ₹{(food.price || 0).toFixed(2)}
+                    </h5>
+                  </div>
 
-                <div className="mb-2">
-                  {[...Array(5)].map((_, index) => (
-                    <FaStar
-                      key={index}
-                      className={`me-1 ${
-                        index < Math.round(food.rating)
-                          ? "text-warning"
-                          : "text-secondary"
-                      }`}
-                    />
-                  ))}
-                  <span className="ms-2 small text-muted">
-                    {food.rating.toFixed(1)}
-                  </span>
-                </div>
+                  <div className="mb-2">
+                    {[...Array(5)].map((_, index) => (
+                      <FaStar
+                        key={index}
+                        className={`me-1 ${
+                          index < Math.round(food.rating || 0)
+                            ? "text-warning"
+                            : "theme-text-muted opacity-50"
+                        }`}
+                      />
+                    ))}
+                    <span className="ms-2 small theme-text-muted">
+                      {(food.rating || 0).toFixed(1)}
+                    </span>
+                  </div>
 
-                <div className="mt-auto d-flex justify-content-between">
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={() => handleEdit(food)}
-                  >
-                    <FaEdit className="me-1" /> Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => handleDelete(food.id)}
-                  >
-                    <FaTrash className="me-1" /> Delete
-                  </button>
-                </div>
+                  <div className="mt-auto d-flex justify-content-between">
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => handleEdit(food)}
+                    >
+                      <FaEdit className="me-1" /> Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => food.id && handleDelete(food.id)}
+                    >
+                      <FaTrash className="me-1" /> Delete
+                    </button>
+                  </div>
 
-                <div className="mt-2 d-flex gap-1">
-                  {food.popular && (
-                    <span className="badge bg-warning text-dark">Popular</span>
-                  )}
-                  {food.newest && (
-                    <span className="badge bg-info text-dark">New</span>
-                  )}
+                  <div className="mt-2 d-flex gap-1">
+                    {food.popular && (
+                      <span className="badge bg-warning text-dark border-0">Popular</span>
+                    )}
+                    {food.newest && (
+                      <span className="badge bg-info text-dark border-0">New</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
+        {(!filteredFoods || filteredFoods.length === 0) && !loading && (
+          <div className="col-12 text-center py-5 theme-text-muted">No dishes found.</div>
+        )}
       </div>
 
       {/* Modal */}
       {showModal && (
         <div className="modal d-block" tabIndex="-1" role="dialog">
           <div className="modal-dialog modal-lg" role="document">
-            <div className="modal-content shadow">
-              <div className="modal-header bg-primary text-white">
-                <h5 className="modal-title">
+            <div className="modal-content shadow-lg border-0 theme-bg-card">
+              <div className="modal-header bg-color text-white border-0">
+                <h5 className="modal-title fw-bold">
                   {editingFood ? "Edit Food" : "Add New Food"}
                 </h5>
                 <button
@@ -243,10 +285,10 @@ const FoodsManagement = () => {
                 <div className="modal-body">
                   <div className="row g-3">
                     <div className="col-md-6">
-                      <label className="form-label">Name</label>
+                      <label className="form-label theme-text-dark">Name</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control theme-bg-light theme-text-main theme-border"
                         name="name"
                         value={newFood.name}
                         onChange={handleChange}
@@ -254,9 +296,9 @@ const FoodsManagement = () => {
                       />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label">Category</label>
+                      <label className="form-label theme-text-dark">Category</label>
                       <select
-                        className="form-select"
+                        className="form-select theme-bg-light theme-text-main theme-border"
                         name="categoryId"
                         value={newFood.categoryId}
                         onChange={handleChange}
@@ -271,11 +313,11 @@ const FoodsManagement = () => {
                       </select>
                     </div>
                     <div className="col-md-12">
-                      <label className="form-label">Price</label>
+                      <label className="form-label theme-text-dark">Price</label>
                       <input
                         type="number"
                         step="0.01"
-                        className="form-control"
+                        className="form-control theme-bg-light theme-text-main theme-border"
                         name="price"
                         value={newFood.price}
                         onChange={handleChange}
@@ -283,9 +325,9 @@ const FoodsManagement = () => {
                       />
                     </div>
                     <div className="col-md-12">
-                      <label className="form-label">Description</label>
+                      <label className="form-label theme-text-dark">Description</label>
                       <textarea
-                        className="form-control"
+                        className="form-control theme-bg-light theme-text-main theme-border"
                         name="description"
                         value={newFood.description}
                         onChange={handleChange}
@@ -294,10 +336,10 @@ const FoodsManagement = () => {
                       />
                     </div>
                     <div className="col-md-12">
-                      <label className="form-label">Image URL</label>
+                      <label className="form-label theme-text-dark">Image URL</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control theme-bg-light theme-text-main theme-border"
                         name="imageUrl"
                         value={newFood.imageUrl}
                         onChange={handleChange}
@@ -305,13 +347,13 @@ const FoodsManagement = () => {
                       />
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label">Rating</label>
+                      <label className="form-label theme-text-dark">Rating</label>
                       <input
                         type="number"
                         step="0.1"
                         max="5"
                         min="0"
-                        className="form-control"
+                        className="form-control theme-bg-light theme-text-main theme-border"
                         name="rating"
                         value={newFood.rating}
                         onChange={handleChange}
@@ -326,7 +368,7 @@ const FoodsManagement = () => {
                           checked={newFood.popular}
                           onChange={handleChange}
                         />
-                        <label className="form-check-label">Popular</label>
+                        <label className="form-check-label theme-text-main">Popular</label>
                       </div>
                       <div className="form-check">
                         <input
@@ -336,15 +378,15 @@ const FoodsManagement = () => {
                           checked={newFood.newest}
                           onChange={handleChange}
                         />
-                        <label className="form-check-label">New</label>
+                        <label className="form-check-label theme-text-main">New</label>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="modal-footer">
+                <div className="modal-footer theme-border-top">
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn btn-secondary border-0"
                     onClick={() => setShowModal(false)}
                   >
                     Cancel
