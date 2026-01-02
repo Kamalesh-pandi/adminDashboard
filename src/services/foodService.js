@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/admin/foods";
+const API_URL = "https://foodorderapp-9ko4.onrender.com/api/admin/foods";
 
 const getConfig = () => {
   const token = localStorage.getItem("token");

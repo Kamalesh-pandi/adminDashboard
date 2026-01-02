@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/admin/categories";
+const API_URL = "https://foodorderapp-9ko4.onrender.com/api/admin/categories";
 
 // Helper function to get fresh token from localStorage
 const getAuthConfig = () => {

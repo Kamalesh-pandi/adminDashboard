@@ -1,7 +1,7 @@
 // src/services/userService.js
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/admin/users";
+const API_URL = "https://foodorderapp-9ko4.onrender.com/api/admin/users";
 
 const token = localStorage.getItem("token");
 const config = {

@@ -1,7 +1,7 @@
 // src/services/adminService.js
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/admin";
+const API_URL = "https://foodorderapp-9ko4.onrender.com/api/admin";
 
 // Helper to get headers with token
 const getAuthHeaders = () => {

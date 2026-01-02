@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/auth"; // Adjust if needed
+const API_URL = "https://foodorderapp-9ko4.onrender.com/api/auth"; // Adjust if needed
 
 // Login API call
 export const login = async (email, password) => {
