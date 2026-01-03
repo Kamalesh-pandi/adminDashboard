@@ -1,6 +1,6 @@
 // components/FoodsManagement.jsx
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaStar, FaPlus, FaSearch } from "react-icons/fa";
+import { FaEdit, FaTrash, FaStar, FaStarHalfAlt, FaPlus, FaSearch } from "react-icons/fa";
 import {
   getAllFoods,
   addFood,
@@ -59,6 +59,7 @@ const FoodsManagement = () => {
   };
 
   useEffect(() => {
+    console.log("FoodsManagement Loaded - V2 Rating Fix");
     fetchFoods();
     fetchCategories();
   }, []);
@@ -86,12 +87,19 @@ const FoodsManagement = () => {
     setError("");
 
     try {
+      // Clean payload: only send what the backend expects for an update/create
       const foodPayload = {
-        ...newFood,
-        price: parseFloat(newFood.price),
-        rating: parseFloat(newFood.rating), // 👈 convert string to number
-        categoryId: parseInt(newFood.categoryId),
+        name: newFood.name,
+        description: newFood.description,
+        price: parseFloat(newFood.price) || 0,
+        rating: parseFloat(newFood.rating) || 0, // Ensure valid number
+        imageUrl: newFood.imageUrl,
+        categoryId: parseInt(newFood.categoryId) || null, // Ensure valid ID or null
+        popular: !!newFood.popular, // Ensure boolean
+        newest: !!newFood.newest // Ensure boolean
       };
+
+      console.log("Sending Food Payload:", foodPayload);
 
       if (editingFood && editingFood.id) {
         await updateFood(editingFood.id, foodPayload);
@@ -104,6 +112,7 @@ const FoodsManagement = () => {
       setNewFood({ ...initialFoodState });
       fetchFoods();
     } catch (err) {
+      console.error("Failed to save food:", err);
       setError(err.message || "Failed to save food");
     } finally {
       setLoading(false);
@@ -218,18 +227,27 @@ const FoodsManagement = () => {
                   </div>
 
                   <div className="mb-2">
-                    {[...Array(5)].map((_, index) => (
-                      <FaStar
-                        key={index}
-                        className={`me-1 ${
-                          index < Math.round(food.rating || 0)
-                            ? "text-warning"
-                            : "theme-text-muted opacity-50"
-                        }`}
-                      />
-                    ))}
+                    {/* Debug info: check console for real field name if needed */}
+                    {console.log("Food Item:", food)} 
+                    {[...Array(5)].map((_, index) => {
+                       const rating = food.rating || food.averageRating || food.stars || food.score || 0;
+                       const fullStars = Math.floor(rating);
+                       const hasHalfStar = rating % 1 >= 0.5;
+
+                       return (
+                         <span key={index} className="me-1">
+                           {index < fullStars ? (
+                             <FaStar className="text-warning" />
+                           ) : index === fullStars && hasHalfStar ? (
+                             <FaStarHalfAlt className="text-warning" />
+                           ) : (
+                             <FaStar className="theme-text-muted opacity-50" />
+                           )}
+                         </span>
+                       );
+                    })}
                     <span className="ms-2 small theme-text-muted">
-                      {(food.rating || 0).toFixed(1)}
+                      {(food.rating || food.averageRating || food.stars || food.score || 0).toFixed(1)}
                     </span>
                   </div>
 

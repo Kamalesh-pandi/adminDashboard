@@ -62,8 +62,8 @@ function Dashboard({ setActivePage }) {
       o.id, 
       o.user?.fullName || "Guest", 
       new Date(o.orderDate).toLocaleDateString(), 
-      o.totalPrice, 
-      o.orderStatus
+      o.totalAmount,
+      o.status
     ]);
 
     let csvContent = "data:text/csv;charset=utf-8,";
@@ -175,20 +175,21 @@ function Dashboard({ setActivePage }) {
                   </thead>
                   <tbody>
                     {recentOrders.map((order) => (
+                      console.log(order),
                       <tr key={order.id} style={{fontSize: '0.9rem'}}>
                         <td className="fw-bold theme-text-dark">#{order.id.toString().slice(-4)}</td>
-                        <td className="theme-text-main">{order.user?.fullName || "Guest User"}</td>
+                        <td className="theme-text-main">{order.userName || "Guest User"}</td>
                         <td className="theme-text-main">{new Date(order.orderDate).toLocaleDateString()}</td>
-                        <td className="theme-text-main">₹{order.totalPrice}</td>
+                        <td className="theme-text-main">₹{order.totalAmount}</td>
                         <td>
                           <span className={`badge bg-${
-                            order.orderStatus === 'COMPLETED' ? 'success' : 
-                            order.orderStatus === 'PENDING' ? 'warning' : 'primary'
+                            order.status === 'COMPLETED' ? 'success' : 
+                            order.status === 'PENDING' ? 'warning' : 'primary'
                           } bg-opacity-10 text-${
-                            order.orderStatus === 'COMPLETED' ? 'success' : 
-                            order.orderStatus === 'PENDING' ? 'warning' : 'primary'
+                            order.status === 'COMPLETED' ? 'success' : 
+                            order.status === 'PENDING' ? 'warning' : 'primary'
                           } border-0`}>
-                            {order.orderStatus}
+                            {order.status}
                           </span>
                         </td>
                       </tr>
