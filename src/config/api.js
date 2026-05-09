@@ -20,4 +20,22 @@ api.interceptors.request.use(
     }
 );
 
+// Response interceptor for handling errors
+api.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem("token");
+            localStorage.removeItem("name");
+            
+            // Notify the app to redirect to login
+            window.dispatchEvent(new Event("auth-expired"));
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;

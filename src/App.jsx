@@ -58,6 +58,16 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setIsLoggedIn(false);
+      setActivePage("dashboard");
+      setAdminName("Admin");
+    };
+    window.addEventListener("auth-expired", handleAuthExpired);
+    return () => window.removeEventListener("auth-expired", handleAuthExpired);
+  }, []);
+
   const handleLogin = (data) => {
     setIsLoggedIn(true);
     if (data && data.name) {
